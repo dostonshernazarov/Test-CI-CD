@@ -12,7 +12,7 @@ env:
   DOCKER_IMAGE_TAG: latest
   SERVER_HOST: 3.76.217.224
   SERVER_USERNAME: ubuntu
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
 jobs:
   build_push_deploy:
@@ -37,7 +37,7 @@ jobs:
         with:
           host: ${{ env.SERVER_HOST }}
           username: ${{ env.SERVER_USERNAME }}
-          key: ${{ env.SSH_KEY }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             docker stop test || true
             docker rm test || true
