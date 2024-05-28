@@ -32,14 +32,32 @@ jobs:
           docker buildx create --use --name mybuilder
           docker buildx build --platform linux/amd64,linux/arm64 --push -t $DOCKER_USERNAME/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
 
-      - name: Deploy Docker image to server
+      - name: Prepare Docker Compose file
+        run: |
+          echo "version: '3.8'
+          services:
+            test:
+              image: $DOCKER_USERNAME/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+              deploy:
+                replicas: 2
+              ports:
+                - 9090:9090
+          " > docker-compose.yml
+
+      - name: Deploy Docker Compose to server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.SERVER_HOST }}
           username: ${{ env.SERVER_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker stop test || true
-            docker rm test || true
-            docker image rm ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }} || true
-            docker run -d --name test -p 9090:9090 ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
+            mkdir -p ~/deploy
+            cd ~/deploy
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
+            chmod 600 id_rsa
+            scp -i id_rsa -o StrictHostKeyChecking=no docker-compose.yml ${{ env.SERVER_USERNAME }}@${{ env.SERVER_HOST }}:~/deploy/docker-compose.yml
+            ssh -i id_rsa -o StrictHostKeyChecking=no ${{ env.SERVER_USERNAME }}@${{ env.SERVER_HOST }} << 'EOF'
+              cd ~/deploy
+              docker-compose down
+              docker-compose up -d
+            EOF
