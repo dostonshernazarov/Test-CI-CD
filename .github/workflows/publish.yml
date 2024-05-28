@@ -41,7 +41,7 @@ jobs:
               deploy:
                 replicas: 2
               ports:
-                - 9090:9090
+                - 9080:9080
           " > docker-compose.yml
 
       - name: Deploy Docker Compose to server

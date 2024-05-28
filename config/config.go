@@ -41,9 +41,9 @@ func Load() Config {
 	c.Environment = cast.ToString(getOrReturnDefault("ENVIRONMENT", "develop"))
 
 	c.LogLevel = cast.ToString(getOrReturnDefault("LOG_LEVEL", "debug"))
-	c.HTTPPort = cast.ToString(getOrReturnDefault("HTTP_PORT", ":9090"))
+	c.HTTPPort = cast.ToString(getOrReturnDefault("HTTP_PORT", ":9080"))
 
-	// another services 
+	// another services
 	c.UserServiceHost = cast.ToString(getOrReturnDefault("USER_SERVICE_HOST", "127.0.0.1"))
 	c.UserServicePort = cast.ToInt(getOrReturnDefault("USER_SERVICE_PORT", 1111))
 	c.PostServiceHost = cast.ToString(getOrReturnDefault("POST_SERVICE_HOST", "127.0.0.1"))
@@ -57,7 +57,7 @@ func Load() Config {
 	c.AuthConfigPath = cast.ToString(getOrReturnDefault("AUTH_PATH", "./config/auth.conf"))
 	c.CSVFilePath = cast.ToString(getOrReturnDefault("CSV_FILE_PATH", "./config/casbin_rules.csv"))
 
-	// jwt 
+	// jwt
 	c.CtxTimeout = cast.ToInt(getOrReturnDefault("CTX_TIMEOUT", 7))
 	c.SigningKey = cast.ToString(getOrReturnDefault("SIGNING_KEY", "test-key"))
 	c.AccessTokenTimeout = cast.ToInt(getOrReturnDefault("ACCESS_TOKEN_TIMOUT", 3600))
